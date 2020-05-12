@@ -19,16 +19,16 @@ void GloMath::setMeters(int metersAhead){
 // Trækker strings ud af seriel forbindelse til GPS
 void GloMath::gpsPull(struct GloMath::gpsData *output) {
 	int pos = 0;                    // Variable to hold position
-	String tempMsg = Serial1.readStringUntil('\n'); // Temporary output for $GPRMC
+	String tempMsg = Serial3.readStringUntil('\n'); // Temporary output for $GPRMC
 	String place[12]; // String array to hold each entry
 	int stringstart = 0;        // Variable to hold start location of string
 
-	Serial1.flush(); // Serial connection is flushed
-	while (Serial1.available() > 0) { // While GPS is available
-		Serial1.read(); // Read entire output
+	Serial3.flush(); // Serial connection is flushed
+	while (Serial3.available() > 0) { // While GPS is available
+		Serial3.read(); // Read entire output
 	}
   
-	if (Serial1.find("$GPRMC,")) { // If Minimum Configuration is present...
+	if (Serial3.find("$GPRMC,")) { // If Minimum Configuration is present...
 		for (int i = 0; i < tempMsg.length(); i++) {  // For-loop to go through each character
 			if (tempMsg.substring(i, i + 1) == ",") { // If the next character in $GPRMC is a comma
 				place[pos] = tempMsg.substring(stringstart, i); // Substring is written to array
@@ -146,7 +146,6 @@ double GloMath::getAngle(bool printing = false){
 // Oprindelig måde at regne kurs. Bruges ikke aktuelt
 double GloMath::getAngleAlt(bool printing = false){
 	float Ang = atan(rot(-this->rotAngle,this->nav.current[0],this->nav.current[1],false)/this->metersAhead);
-	Serial.print("raw   Ang  "); Serial.println(Ang);
 
 	if ((Ang-this->rotAngle) > (PI/2)) {
 		Ang = (PI*2)+Ang;
@@ -205,7 +204,7 @@ void GloMath::printCoordinates(){
 	if (this->GPSdebug = true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
 
 		// Prints all current coordinates
-		Serial.print("\nNavgation point : \t"); Serial.print(this->nav.navpoint[0],6);
+		Serial.print("Navgation point : \t"); Serial.print(this->nav.navpoint[0],6);
 		Serial.print(" , "); Serial.println(this->nav.navpoint[1],6);
 
 		Serial.print("Current point : \t"); Serial.print(this->nav.current[0],6);
@@ -215,7 +214,7 @@ void GloMath::printCoordinates(){
 		Serial.print(" , "); Serial.println(this->nav.start[1],6);
 
 		Serial.print("Destination point : \t"); Serial.print(this->nav.dest[0],6);
-		Serial.print(" , "); Serial.print(this->nav.dest[1],6);Serial.println("\n");
+		Serial.print(" , "); Serial.println(this->nav.dest[1],6);//Serial.println("");
 	} else {
 		// Inform use of lack of lock
 		Serial.println("GPS does not have lock");
@@ -277,10 +276,10 @@ double GloMath::getCourse(){
 		distToDest();
 
 		// Calculate angle from the equator
-		getAngle(true);
+		getAngle();
 
 		// Calculate angle from north in cartesian coordinates (ALTERNATIVE)
-		getAngleAlt(true);
+		getAngleAlt();
 
 		// Point of navigation is calculated
 		getNavpoint();
@@ -315,8 +314,12 @@ float GloMath::version(bool print = false){
 	}
 }
 
-bool GloMath::gpsReady(){
+bool GloMath::isReady(){
 	if (this->GPSdebug = true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
 		return true;
 	} else {return false;}
+}
+
+double GloMath::destDist(){
+	return this->metersToDest;
 }

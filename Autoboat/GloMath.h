@@ -1,7 +1,7 @@
 #ifndef GloMath_h
 #define GloMath_h
 
-#define lib_version 1.20
+#define lib_version 1.21
 
 class GloMath{
 	public:
@@ -31,7 +31,8 @@ class GloMath{
 		float courseFloat();
 		double distToDest();
 		float version(bool print = false);
-		bool gpsReady();
+		bool isReady();
+		double destDist();
 
 	private:
 		//double course;
