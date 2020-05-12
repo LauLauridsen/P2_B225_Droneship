@@ -1,0 +1,35 @@
+** Samlet PD **
+V§error V_err GND PULSE(4.5 2.5 5s 1000ms 1000ms 4s 10s)
+
+* 5 V and 6 V supply
+V5 U5 GND 5
+V6 U6 GND 6.5
+
+* Spændingsdeler
+R2 GND U3_2 100K
+R1 U3_2 U5 100K
+XSplit U3_2 U3_1 U5 GND U3_1 LM358
+
+* Proportional
+XP1 U3_1 U2_3 U6 GND P_out LM358
+R_P2 P_out U2_3 110k
+R_P1 U2_3 V_err 220k
+
+* Differential
+XD1 U3_1 C1_2 U6 GND D_out LM358
+R_D D_out C1_2 500k
+R_CD V_err C1_3 470
+C_D C1_3 C1_2 1U
+
+* Summering
+XS1 U3_1 U4_3 U6 GND Vout LM358
+R_St U4_3 Vout 100K
+R_SP P_out U4_3 100K
+R_SD D_out U4_3 100K
+
+.lib LTC.lib
+.tran 20s
+.inc opamp.sub
+.inc LM358.cir
+.backanno
+.end
