@@ -1,9 +1,6 @@
 #include "Arduino.h"
 #include "GloMath.h"
 #include "math.h"
-//#include "trigo.h"
-
-//#define GloMathPrinting
 
 // Constructor
 GloMath::GloMath(float metersAhead = 10, bool GPSdebug = false){
