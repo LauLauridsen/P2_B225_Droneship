@@ -191,6 +191,7 @@ void setup() {
 void loop() {
 
 	gps.getCourse();
+  gps.printCoordinates();
 
 	// Båden får et par sekunder til at varme op og få GPS lock
 	if (millis() > warmup_time_seconds*1000 && gps.isReady() == true && waypoint_init == false){

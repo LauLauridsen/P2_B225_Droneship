@@ -1,7 +1,7 @@
 #ifndef GloMath_h
 #define GloMath_h
 
-#define lib_version 1.21
+#define lib_version 1.22
 
 class GloMath{
 	public:
@@ -32,7 +32,9 @@ class GloMath{
 		double distToDest();
 		float version(bool print = false);
 		bool isReady();
+		bool isValid();
 		double destDist();
+
 
 	private:
 		//double course;
@@ -52,6 +54,7 @@ class GloMath{
 		navSet temp;
 		double latFact = 1;
 		double lonFact = 40075/360;
+		bool valid;
 		double rotAngle;
 		double courseError;
 		double metersToDest;

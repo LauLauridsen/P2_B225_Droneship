@@ -19,16 +19,16 @@ void GloMath::setMeters(int metersAhead){
 // Trækker strings ud af seriel forbindelse til GPS
 void GloMath::gpsPull(struct GloMath::gpsData *output) {
 	int pos = 0;                    // Variable to hold position
-	String tempMsg = Serial3.readStringUntil('\n'); // Temporary output for $GPRMC
+	String tempMsg = Serial1.readStringUntil('\n'); // Temporary output for $GPRMC
 	String place[12]; // String array to hold each entry
 	int stringstart = 0;        // Variable to hold start location of string
-
-	Serial3.flush(); // Serial connection is flushed
-	while (Serial3.available() > 0) { // While GPS is available
-		Serial3.read(); // Read entire output
+	//Serial.println(tempMsg);	// Prints tempMsg to serial monitor
+	Serial1.flush(); // Serial connection is flushed
+	while (Serial1.available() > 0) { // While GPS is available
+		Serial1.read(); // Read entire output
 	}
   
-	if (Serial3.find("$GPRMC,")) { // If Minimum Configuration is present...
+	if (Serial1.find("$GPRMC,")) { // If Minimum Configuration is present...
 		for (int i = 0; i < tempMsg.length(); i++) {  // For-loop to go through each character
 			if (tempMsg.substring(i, i + 1) == ",") { // If the next character in $GPRMC is a comma
 				place[pos] = tempMsg.substring(stringstart, i); // Substring is written to array
@@ -48,6 +48,14 @@ void GloMath::gpsPull(struct GloMath::gpsData *output) {
 	output -> lathem = place[3];     // lat hem
 	output -> longitude = place[4];  // longitude
 	output -> longhem = place[5];    // long hem
+
+	if (place[1] == "A"){
+		this->valid = true;
+	} else {this->valid = false;}
+}
+
+bool GloMath::isValid(){
+	return this->valid;
 }
 
 // Formatterer GPS koordinaterne til DD med fortegn
@@ -166,6 +174,7 @@ double GloMath::latFactor(){
 
 	// Calculates meters/degree og longitude for given latitude
 	this->latFact = 40075/(1/cos((this->nav.current[0]/180)*PI)*360);
+	Serial.println(this->latFact);
 	return this->latFact;
 }
 
@@ -201,7 +210,7 @@ void GloMath::printCourseInfo(){
 void GloMath::printCoordinates(){
 
 	// If coordinates are valid
-	if (this->GPSdebug = true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
+	if (this->GPSdebug == true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
 
 		// Prints all current coordinates
 		Serial.print("Navgation point : \t"); Serial.print(this->nav.navpoint[0],6);
@@ -251,9 +260,9 @@ double GloMath::distToDest(){
 
 // Taktisk sammensætning af ovenstående funktioner
 double GloMath::getCourse(){
-
 	// use GPS when possible
 	if (this->GPSdebug == false){
+		Serial.println("READING GPS");
 		gpsPull(&this->pulled);
 		gpsFormat();
 	} else {
@@ -261,7 +270,7 @@ double GloMath::getCourse(){
 	}
 	
 	// If debugging, or GPS values are valid
-	if (this->GPSdebug = true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
+	if (this->GPSdebug == true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
 
 		// Place all coordinates in temporary struct
 		this->temp = this->nav;
@@ -315,7 +324,7 @@ float GloMath::version(bool print = false){
 }
 
 bool GloMath::isReady(){
-	if (this->GPSdebug = true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
+	if (this->GPSdebug == true || this->nav.current[0] != double(0.0) && this->nav.current[1] != double(0.0)){
 		return true;
 	} else {return false;}
 }
